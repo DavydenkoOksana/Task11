@@ -1,6 +1,8 @@
 package ua.hillel.oop.controller;
 
 import ua.hillel.oop.entities.Human;
+import ua.hillel.oop.exception.AlreadyExistException;
+import ua.hillel.oop.exception.NotFoundException;
 import ua.hillel.oop.services.HumanService;
 import ua.hillel.oop.ui.HumanUI;
 
@@ -17,10 +19,10 @@ public class HumanController {
 
     public void addHumanOption() {
         Human human = humanUI.readHuman();
-        if (humanService.isContainHuman(human)) {
-            System.out.println("User " + human + " already exist");
-        } else {
+        try {
             humanService.addToList(human);
+        } catch (AlreadyExistException e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -34,21 +36,21 @@ public class HumanController {
 
     public void findBySurnameOption() {
         String surname = humanUI.readSurname();
-        List<Human> surnameList = humanService.findBySurname(surname);
-        if (surnameList.size() == 0) {
-            System.out.println("User with surname " + surname + " is not found");
-        } else {
+        try {
+            List<Human> surnameList = humanService.findBySurname(surname);
             humanUI.showList(surnameList);
+        } catch (NotFoundException e) {
+            System.out.println(e.getMessage());
         }
     }
 
     public void findByNameOption() {
         String name = humanUI.readName();
-        List<Human> nameList = humanService.findByName(name);
-        if (nameList.size() == 0) {
-            System.out.println("User with surname " + name + " is not found");
-        } else {
+        try {
+            List<Human> nameList = humanService.findByName(name);
             humanUI.showList(nameList);
+        } catch (NotFoundException e) {
+            System.out.println(e.getMessage());
         }
     }
 }

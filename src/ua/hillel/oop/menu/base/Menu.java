@@ -1,5 +1,7 @@
 package ua.hillel.oop.menu.base;
 
+import ua.hillel.oop.exception.InvalidChoice;
+
 import java.util.List;
 import java.util.Scanner;
 
@@ -16,29 +18,38 @@ public class Menu {
         while (true) {
             showMenu();
             int choice = getUserChoice();
-            if (isChoiceValid(choice)){
-                System.out.println("Error, please choose another option");
-                continue;
+            try {
+                invalidChoice(choice);
+                items.get(choice).exec();
+                if (items.get(choice).closeAfter()) break;
+            } catch (InvalidChoice e) {
+                System.out.println(e.getMessage());
             }
-            items.get(choice).exec();
-            if(items.get(choice).closeAfter()) break;
         }
     }
 
-    private boolean isChoiceValid(int choice) {
-        return choice < 0 || choice >= items.size();
+    private void invalidChoice(int choice) throws InvalidChoice {
+        if (choice < 0 || choice >= items.size()) {
+            throw new InvalidChoice("Error, choice is out of bound,please try again");
+        }
     }
 
-    private void showMenu(){
+    private void showMenu() {
         for (int i = 0; i < items.size(); i++) {
             System.out.println((i + 1) + " - " + items.get(i).getName());
         }
     }
 
     private int getUserChoice() {
-        System.out.println("Please choose your option");
-        int choice = sc.nextInt() - 1;
-        sc.nextLine();
-        return choice;
+        while (true) {
+            try {
+                System.out.println("Please choose your option");
+                return sc.nextInt() - 1;
+            } catch (Exception e) {
+                System.out.println("Error, please enter the number");
+            } finally {
+                sc.nextLine();
+            }
+        }
     }
 }
